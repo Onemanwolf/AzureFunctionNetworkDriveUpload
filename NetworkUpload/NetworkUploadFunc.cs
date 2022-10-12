@@ -21,7 +21,7 @@ namespace NetworkUpload
 
         public NetworkUploadFunc()
         {
-            _networkName = @"\\your IP\ShareFolder";
+            _networkName =  @"\\Your Ip goes here\ShareFolder";
             _networkConnection = new NetworkConnection(_networkName, new NetworkCredential("UserName", "Password"));
         }
 
@@ -34,7 +34,8 @@ namespace NetworkUpload
             log.LogInformation("C# HTTP trigger function processed a request.");
 
             string name = req.Query["name"];
-         await   UploadFile("");
+             string file = @"{""Name"":""Tim Oleson"",""Age"":30,""Address"":{""Street"":""123 Main St"",""City"":""Anytown"",""State"":""CA"",""Zip"":""12345""}}";
+         await   UploadFile("File.json", file);
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             dynamic data = JsonConvert.DeserializeObject(requestBody);
             name = name ?? data?.name;
@@ -46,7 +47,7 @@ namespace NetworkUpload
             return new OkObjectResult(responseMessage);
         }
 
-        public async Task UploadFile(string fileName)
+        public async Task UploadFile(string fileName, string file)
         {
         var NetConnect = _networkConnection;
 
@@ -56,9 +57,9 @@ namespace NetworkUpload
 
             foreach (var item in fileList) {  _networkName = item;  }
             DirectoryInfo[] cDirs = new DirectoryInfo(@"C:\FileUpload").GetDirectories();
-          string file = @"c:\FileUpload\CDriveDirs.txt";
+         // string file = @"{""file"":""C:\FileUpload\test.txt""}";
 
-            _networkName = _networkName + "\\fDriveDirs.txt";
+            _networkName = _networkName + $"\\{fileName}";
             byte[] bytes = Encoding.UTF8.GetBytes(file);
             using (FileStream fileStream = File.Create(_networkName, bytes.Length))
             {
